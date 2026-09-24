@@ -1,0 +1,86 @@
+import streamlit as st
+import requests
+import json
+import time
+
+# --- PENGATURAN TAMPILAN & WARNA ---
+st.set_page_config(page_title="ODH Video Automator", layout="centered")
+
+# Injeksi CSS untuk nuansa Hijau Tua, Gold, Putih, dan Cream
+st.markdown("""
+<style>
+    .stApp { background-color: #FDFBF7; /* Cream terang */ }
+    h1, h2, h3, p, span { color: #0A3622 !important; /* Hijau Tua */ }
+    .stButton>button {
+        background-color: #D4AF37; /* Gold */
+        color: #FFFFFF !important;
+        border: none;
+        border-radius: 6px;
+        font-weight: bold;
+    }
+    .stButton>button:hover {
+        background-color: #0A3622; /* Hijau Tua hover */
+        color: #D4AF37 !important;
+    }
+    .stAlert { background-color: #FFFFFF; border-left-color: #D4AF37; }
+</style>
+""", unsafe_allow_html=True)
+
+st.title("🎬 Sistem Otomasi Video ODH")
+st.write("Integrasi Pipeline: Ide Teks ➔ LLM Scripting ➔ Google Flow Video")
+
+# --- KUNCI API (Nantinya disembunyikan di Environment Variables saat deploy) ---
+LLM_API_KEY = st.text_input("Masukkan API Key LLM (OpenAI/Gemini):", type="password")
+FLOW_API_KEY = st.text_input("Masukkan API Key Google Flow:", type="password")
+
+st.divider()
+
+# --- INPUT PENGGUNA ---
+ide_video = st.text_area("Masukkan Ide Video:", "Video promosi tentang JP ASN untuk pegawai dengan pendekatan emosional.")
+
+if st.button("🚀 Mulai Generate Pipeline"):
+    if not LLM_API_KEY or not FLOW_API_KEY:
+        st.error("⚠️ Harap masukkan API Key terlebih dahulu di atas.")
+    elif not ide_video:
+        st.warning("⚠️ Masukkan ide video.")
+    else:
+        # STEP 1: PANGGIL LLM (Simulasi/Draft API Call)
+        st.info("🧠 Menghubungi LLM untuk memecah scene dan membuat prompt...")
+        time.sleep(2) # Hapus baris ini jika API asli sudah dipasang
+        
+        # Simulasi respons JSON dari LLM
+        scene_data = [
+            {
+                "scene": "SC001",
+                "prompt": "Cinematic slow push in shot. A 55-year-old Indonesian man wearing an official brown civil servant uniform sitting in a realistic public service office. Dark green, gold, white, and cream tones, 4k."
+            },
+            {
+                "scene": "SC002",
+                "prompt": "Over the shoulder shot. Older Indonesian man looking at his modern smartphone screen smiling. Realistic office interior, cinematic lighting."
+            }
+        ]
+        
+        st.success("✅ Script JSON berhasil digenerate!")
+        with st.expander("Lihat Struktur JSON"):
+            st.json(scene_data)
+        
+        st.divider()
+        st.subheader("🎥 Eksekusi Google Flow")
+        
+        # STEP 2: LOOPING KE GOOGLE FLOW
+        hasil_urls = []
+        for item in scene_data:
+            with st.spinner(f"Mengirim {item['scene']} ke mesin render..."):
+                # Tempat Anda menaruh requests.post ke Google Flow
+                # response = requests.post("URL_FLOW_ANDA", json={"prompt": item['prompt']}, headers={"Auth": FLOW_API_KEY})
+                time.sleep(3) # Simulasi render
+                
+                # Simulasi hasil URL
+                dummy_url = f"https://api.contoh-flow.com/download/{item['scene']}.mp4"
+                hasil_urls.append({"scene": item['scene'], "url": dummy_url})
+                st.write(f"✔️ **{item['scene']}** Selesai dirender.")
+        
+        # STEP 3: OUTPUT FINAL
+        st.success("🎉 Seluruh video berhasil dirender!")
+        for res in hasil_urls:
+            st.markdown(f"📥 [Download {res['scene']}]({res['url']})")
